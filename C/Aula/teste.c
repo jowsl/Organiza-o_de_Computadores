@@ -1,33 +1,45 @@
-// Jouberth Matheus Simão Pereira nº23.2.4011
 #include <stdio.h>
-#include <string.h>
-#define MAX 61
 
-int main(){
-char nome[MAX], sobrenome[MAX], primeiro[MAX];
-int letras=0, letras2=0;
-int i, x;
-printf("Digite o nome completo: ");
-fgets(nome, MAX, stdin);
-nome[strcspn(nome, "\n")] = 0;
-for ( i = strlen(nome) - 1; i >= 0 && nome[i] != ' '; i--);
-    strcpy(sobrenome, &nome[i + 1]);
-    nome[i] = '\0';
-    strcpy(primeiro, nome);
-    for (x = 0; x < strlen(primeiro); x++) {
-        if (primeiro[x] != ' ') {
-            letras++;
-        }
+struct Racional {
+    int numerador;
+    int denominador;
+};
+typedef struct Racional Racional;
+
+int calcularMDC(int a, int b) {
+    int resto;
+    while (b != 0) {
+        resto = a % b;
+        a = b;
+        b = resto;
     }
-    for (x = 0; x < strlen(sobrenome); x++) {
-        if (sobrenome[x] != ' ') {
-            letras2++;
-        }
-    }
-    letras = letras + letras2;
-    printf("%s, %s\n", sobrenome, primeiro); // 'sobrenome' is printed before 'primeiro'
-    printf("Total de letras: %d\n", letras);
-    printf("Total de letras do último sobrenome: %d\n\n", letras2);
-    
+    return a;
+}
+
+int calcularMMC(int a, int b) {
+    return (a * b) / calcularMDC(a, b);
+}
+
+int main() {
+    Racional r1;
+    int MMC, MDC;
+
+    printf("Digite numerador e denominador de r1: ");
+    scanf("%d %d", &r1.numerador, &r1.denominador);
+
+    // Calculando o MDC e o MMC
+    MDC = calcularMDC(r1.numerador, r1.denominador);
+    MMC = calcularMMC(r1.numerador, r1.denominador);
+
+    // Saída dos resultados
+    printf("MDC: %d\n", MDC);
+    printf("MMC: %d\n", MMC);
+
+    // Teste de simplificação
+    int numeradorSimplificado = r1.numerador / MDC;
+    int denominadorSimplificado = r1.denominador / MDC;
+    printf("Numerador simplificado: %d\n", numeradorSimplificado);
+    printf("Denominador simplificado: %d\n", denominadorSimplificado);
+
     return 0;
 }
