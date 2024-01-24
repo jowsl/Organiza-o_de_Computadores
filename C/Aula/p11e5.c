@@ -46,6 +46,7 @@ scanf("%s", nomeArquivo);
         if(nAlunos[i].nota>mediaNotas)
             printf("%s\n", nAlunos[i].nome);
     }
+    fclose(arquivo);
     return 0;
 }
 

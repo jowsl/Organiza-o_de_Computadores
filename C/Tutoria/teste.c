@@ -1,33 +1,64 @@
 #include <stdio.h>
-#define max 50
+#include <stdlib.h>
 
-float custoEnergia(float valor){
-    float gasto = 0;
-    if(valor<30)
-        gasto=1.08*valor;
-    else if(valor>30 && valor<120)
-        gasto=1.08*valor+30;
-    else if(valor>120)
-        gasto=1.22*valor+30;
-    return gasto;
-}
+float** criaMatriz(int m, int n);
+void liberaMatriz(float **matriz, int m);
+float ** custoEnergia(float **mat, int n);
 
-int main(){
-    int casas;
-    float valor[max], v[max];
+int main() {
+    float **mat;
+    int nCasas;
+
     printf("Digite a quantidade de residências: ");
-    scanf("%d", &casas);
-    if (casas>50||casas<0){
-        printf("Valor inválido! Digite a quantidade de residências:");
-        scanf("%d", &casas);
+    scanf("%d", &nCasas);
+    mat = criaMatriz(nCasas, 2);
+
+    for (int i = 0; i < 2; i++) {
+        for (int j = 0; j < nCasas; j++) {
+            printf("Digite os gastos de KWh da residência %d:", j + 1);
+            scanf("%f", &mat[0][j]);
+            custoEnergia(mat, nCasas);
+        }
     }
-    for (int i = 0; i < casas; i++){
-        printf("Digite os gastos em KWh da residência %d:", i+1);
-        scanf("%f", &valor[i]);
-        v[i]=custoEnergia(valor[i]);
+
+    for (int i = 0; i < 2; i++) {
+        for (int j = 0; j < nCasas; j++) {
+            printf("Residência %d: Gastos %.2f KWh - Custo: R$%.2f\n", j + 1, mat[0][j], mat[1][j]);
+        }
     }
-    for (int i = 0; i < casas; i++){
-        printf("Residência %d:Gasto:%.2f KWh - Custo: R$%.2f\n", i+1, valor[i], v[i]);
-    }
+
+    liberaMatriz(mat, nCasas);
+    free(mat);
     return 0;
 }
+
+float** criaMatriz(int m, int n) {
+    float **matriz = malloc(m * sizeof(float*));
+    for (int i = 0; i < m; i++) {
+        matriz[i] = malloc(n * sizeof(float));
+    }
+    return matriz;
+}
+
+void liberaMatriz(float **matriz, int m) {
+    for (int i = 0; i < m; i++) {
+        free(matriz[i]);
+    }
+}
+
+float ** custoEnergia(float **mat, int n) {
+    for (int i = 0; i < 2; i++) {
+        for (int j = 0; j < n; j++) {
+            if (mat[0][j] <= 30)
+                mat[0][j] = mat[1][j] * 1.08;
+            else if (mat[0][j] > 30 && mat[0][j] < 120)
+                mat[0][j] = mat[1][j] * 1.08 + 30;
+            else if (mat[0][j] > 120)
+                mat[0][j] = mat[1][j] * 1.22 + 30;
+            else
+                printf("Valor incorreto!");
+        }
+    }
+    return mat;
+}
+    
