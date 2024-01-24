@@ -1,0 +1,38 @@
+
+Criação de matriz alocando dinâmicamente
+
+int** criaMatriz(int m, int n){
+    int **matriz = malloc (m * sizeof(int*));
+    for (int i = 0; i < m; i++){
+        matriz[i] = malloc(n * sizeof(int));
+        }
+    return matriz;
+}
+
+Liberação da matriz alocada
+void liberaMatriz(int** matriz, int m){
+    for (int i = 0; i < m; i++){
+        free(matriz[i]);
+    }
+}
+
+libera a parte interna, depois deve-se dar free na parte da main.
+free(matriz);
+
+Ler termos da matriz.
+int lerMatriz(int** matriz, int m, int n){
+    for(int i = 0; i < m; i++){
+        for(int j = 0; j < n; j++)
+            scanf("%d", matriz[i][j]);
+    }
+}
+
+Printar uma matriz
+void printaMatriz(int** matriz, int m, int n){
+    for(int i = 0; i < m; i++){
+        for(int j = 0; j < n; j++)
+            printf("%d ", matriz[i][j]);
+        printf("\n");
+    }
+}
+
