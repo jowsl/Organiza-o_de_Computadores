@@ -18,13 +18,14 @@ void MatrizVazia(int** matriz, int m, int n);
 
 int main(int argc, char *argv[]){
     if (argc < 2){ //argv[0] deve ser nome do programa e argv[1] deve ser o nome do arquivo.
-        printf("\tErro!\n\tVerifique se foi digitado corretamente o nome do arquivo e executável do programa.\n\n");
+        printf("\n\tErro!\n\tVerifique se foi digitado corretamente o nome do arquivo e executável do programa.\n\n");
         return 0;
     }
 
     int **yCab, **xCab, **spaceCab;
     int lin, col;
     char *Arquivotxt = argv[1];
+   // coordenadas x, y;
 
     FILE *arquivo = fopen(Arquivotxt, "r+");
     if (arquivo == NULL){
@@ -54,7 +55,23 @@ int main(int argc, char *argv[]){
     
     MatrizVazia(spaceCab, varLinAux+1, varColAux+1);
 
-    // matriz vazia printada, continuar.
+    //leitura e prints do xCab
+    for (int i = 0; i < varLinAux+1; i++)
+    {
+        for (int j = 0; j < varColAux+1; j++)
+        {
+            if(i == varLinAux){
+                xCab[i][j] = 65+j;
+                printf("%2c ", xCab[i][j]);
+            } else {    
+                fscanf(arquivo, "%d", &xCab[i][j]);
+                printf("%2d ", xCab[i][j]);
+            }
+        }
+        printf("\n");
+    }
+    
+    // implementar uma forma da matriz vazia ficar dentro de uma das duas matrizes.
 
 
 

@@ -36,3 +36,11 @@ void printaMatriz(int** matriz, int m, int n){
     }
 }
 
+
+
+//////////////////////////////////////////////////
+
+remover buffer no linux
+
+#include <stdio_ext.h>
+__fpurge(stdin);
