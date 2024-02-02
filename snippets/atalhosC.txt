@@ -44,3 +44,16 @@ remover buffer no linux
 
 #include <stdio_ext.h>
 __fpurge(stdin);
+
+VALGRIND
+
+gcc -g programa.c -o executavel -Wall -lm
+valgrind --leak-check=full ./programa argv[1]
+
+/////////////////////////////////////////////////
+
+    remover o /n do fgets
+
+    if (novoNome[strlen(novoNome) - 1] == '\n') {
+        novoNome[strlen(novoNome) - 1] = '\0';
+    }
