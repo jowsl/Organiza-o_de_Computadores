@@ -2,6 +2,7 @@
     #include <stdlib.h>
     #include <string.h>
     #include <stdio_ext.h>
+    #include <math.h>
 
 
     // Protótipos (descrições na implementação se necessário.)
@@ -86,15 +87,10 @@
         printf("Você pode ler mais sobre o jogo em http://www.nonograms.org/.\n\n");
 
         while(1){ // verificações de commandos, se retornar algo diferente de 1, o loop sai.
-
+ /*REMOVER*/            break;
             printf("Digite um comando: ");
             fgets(Comando, 10, stdin);
             Comando[strcspn(Comando, "\n")] = 0; // Remove o '\n' do final da string
-            /////////////
-/*REMOVER*/         if (strcmp(Comando, "fim") == 0){
-            break;
-            }
-            ////////////
             if (strcmp(Comando, "sair") == 0){
                 printf("Saindo do jogo.\n");
                 return -1;
@@ -124,58 +120,28 @@
         }
 
 
-        // while(1){
-        // __fpurge(stdin);
-        // fgets(Comando, 10, stdin);
-        // if (Comando[0] == 's' && Comando[1] == 'a' && Comando[2] == 'i' && Comando[3] == 'r'){
-        //     printf("Saindo do jogo...\n");
-        //     return -1;
-        // }
-        // else if (Comando[0] == 'r' && Comando[1] == 'e' && Comando[2] == 's' && Comando[3] == 'o' && Comando[4] == 'l' && Comando[5] == 'v' && Comando[6] == 'e' && Comando[7] == 'r'){
-        //     resolver();
-        //     return 0;
-        // }
-        // else if (Comando[0] == 's' && Comando[1] == 'a' && Comando[2] == 'l' && Comando[3] == 'v' && Comando[4] == 'a' && Comando[5] == 'r'){
-        //     printf("Salvando o jogo...\n");
-        //     funcaoSalvar();
-        // }
-        // else if ((Comando[0] == 'x') || (Comando[0] == '-') || (Comando[0] == '.') && (Comando[1] == ' ') && (Comando[2] >= 65) && (Comando[2] <= 90) && (Comando[3] >= 65) && (Comando[3] <= 90)){
-        //     printf("Comando válido!\n");
-        // }
-        // else{
-        //     printf("Comando inválido! Tente novamente.\n");
-        // }
-        // }
-
-    
-
         quantosPorLinhaX = malloc(col * sizeof(int));
         quantosPorLinhaY= malloc(lin * sizeof(int));
 
 
-
-        // cria matriz principal onde será armazenado o jogo.
-
-            
-        ////////////////////////////////////////////////////////////////////////////////////////////
-
         int num, contLin=0, contCol=0;
         while ((contLin < lin || contCol < col) && fscanf(arquivo, "%d%*[^\n]", &num) == 1) {  // %*[^\n] "%*" ignora o que vem depois do %d até o \n   
             if (contLin < lin) {                                                               // especificado em [^\n].
-                quantosPorLinhaY[contLin] = num;
+                quantosPorLinhaY[contLin] = num; // salva os valores da primeira linha (quantidade de números por linha). para matriz yCab.
                 if (num > maiorValorY) {  // salva o maior valor para definir o espaçamento do cabeçalho.
                     maiorValorY = num; // linhas
                 }
                 contLin++;
             } else if (contCol < col) { 
-                quantosPorLinhaX[contCol] = num;
+                quantosPorLinhaX[contCol] = num; // salva os valores da segunda linha (quantidade de números por coluna). para matriz xCab.
                 if (num > maiorValorX) {
                     maiorValorX = num; // colunas
                 }
                 contCol++;
             }
         } // a função desse while é salvar os valores de x e y em vetores e salvar o maior valor de cada um para definir o cabeçalho corretamente.
-
+        // for(int i = 0; i < lin; i++)
+        //     printf("DEBUG quantosPorLinhaY[%d]: %d\n", i, quantosPorLinhaY[i]);
         // criação da matriz com espaços em branco do canto superior esquerdo.
         char matEspacos[maiorValorY+1][maiorValorX+1];
             for (int i = 0; i < maiorValorX+1; i++){
@@ -236,86 +202,44 @@ void marcandoTabela(int coord[2], char **matJogo,char Comando[10]){
 
 void printarTudo(char **matrizJogo, int lin, int col, int maiorValorX, int maiorValorY, int *quantosPorLinhaX, int *quantosPorLinhaY, int **xCab, int **yCab, char *vetLetrasX, char *vetLetrasY) {
 
-// Print do xCab
-for (int k = maiorValorX - 1; k >= 0; k--){
-    // Adicione espaços para alinhar com o eixo Y
-    for (int s = 0; s < maiorValorY; s++) {
-        printf("  ");
-    }
-    printf("  "); // Espaço extra para o eixo Y
+// Print do xCab dos infernos.
+    for (int k = maiorValorX - 1; k >= 0; k--){ // aqui so usei ao contrário para printar os valores de cima para baixo.
+        for (int s = 0; s < maiorValorY; s++) {
+            printf("   "); // espaço pra alinhar
+        }
+    printf("   "); // espaço pra alinhar
 
     for (int j = 0; j < col; j++) {
         if (k < quantosPorLinhaX[j]) {
-            printf("%-2d ", xCab[j][k]);
+            printf("%-3d", xCab[j][k]); // Use a largura de campo especificada
         } else {
-            printf("  ");
+            printf("%-3c", 32); // Use a largura de campo especificada com espaços
         }
     }
     printf("\n");
 }
 
-//     // Print do xCab 2
-// for (int k = 0; k < maiorValorX; k++){
-//     // Adicione espaços para alinhar com o eixo Y
-//     for (int s = 0; s < maiorValorY; s++) {
-//         printf("  ");
-//     }
-//     printf("  "); // Espaço extra para o eixo Y
-
-//     for (int j = 0; j < col; j++) {
-//         if (k < quantosPorLinhaX[j]) {
-//             printf("%-2d ", xCab[j][k]);
-//         } else {
-//             printf("  ");
-//         }
-//     }
-//     printf("\n");
-// }
-
-    // Print do xCab velho
-    // for (int j = 0; j < col; j++) {
-    //     for (int k = 0; k < maiorValorX; k++){
-    //         if (k < quantosPorLinhaX[j]) {
-    //             printf("%-2d ", xCab[j][k]);
-    //         } else {
-    //             printf("  ");
-    //         }
-    //     }
-    // }
-    // printf("\n");
-int espacos=0;
-    // while (espacos < maiorValorX+1){
-    //     printf("  ");
-    //     espacos++;    
-    // }
-    // for (int j = 0; j < col; j++) {
-    //     printf("%-2d ", xCab[j][0]);
-    // }
-    // printf("\n");
-
-    // Print vetor letras X
-    espacos=0;
-    while (espacos < maiorValorX+1){
-        printf("  ");
-        espacos++;    
+    for (int s = 0; s < maiorValorY; s++) {
+        printf("   ");
     }
+    printf("   ");
     for (int j = 0; j < col; j++) {
-        printf("%-3c ", vetLetrasX[j]);
+        printf("%-3c", vetLetrasX[j]);
     }
     printf("\n");
 
     // Print vetor letras Y e matriz do jogo
     for (int i = 0; i < lin; i++) {
         for (int j = 0; j < quantosPorLinhaY[i]; j++){
-            printf("%-2d", yCab[i][j]);
+            printf("%-3d", yCab[i][j]);
         }
     // Se a linha atual tem menos valores do que o máximo, imprima espaços extras
     for (int j = quantosPorLinhaY[i]; j < maiorValorY; j++) {
-            printf("  ");
+            printf("   ");
         }
-        printf("   %-3c", vetLetrasY[i]); // do eixo Y
+        printf("%-3c", vetLetrasY[i]); // do eixo Y
         for (int j = 0; j < col; j++) {
-            printf("%-3c ", matrizJogo[i][j]);
+            printf("%-3c", matrizJogo[i][j]);
         }
         printf("\n");
     }   

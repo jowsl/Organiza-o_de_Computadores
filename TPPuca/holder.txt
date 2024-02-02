@@ -1,0 +1,202 @@
+    while (fscanf(arquivo, "%d", &num) == 1){ // fscanf vai retornar 1 se conseguir ler um inteiro.
+        contN++;
+        ch = fgetc(arquivo);
+        
+        if (ch == '.' || ch == 'x' || ch == '-' ){
+            break;
+        }
+        
+
+        if (ch == ' ' || ch == '\n'){
+            contN--;
+        }
+        if (ch == '\n'){
+            if(contN > maiorNlinha){
+            maiorNlinha = contN;
+            }
+        contN = 0;
+        }
+
+    }
+    
+    if(contN > maiorNlinha)   // garante que seja adicionado a maiorNlinha mesmo se n houver quebra de linha no final.
+        maiorNlinha = contN;
+    
+
+    printf("DEBUG %d", maiorNlinha);
+
+    
+
+
+        // for(int i = 0; i < varLinAux+1; i++){
+    //     espacador(maiorNlinha);
+    //     for(int j = 0; j < varColAux+1; j++){
+    //         if (i == maiorNlinha+1 && j >= maiorNlinha+2){
+    //             printf("%2c ", xCab[i][j]);
+    //         }
+    //         printf("%2d ", xCab[i][j]);
+    //     }
+    //     printf("\n");
+    // }
+
+
+    
+// typedef struct{
+//     int x;
+//     int y;
+// } coordenadas;
+
+
+
+
+
+            // fscanf(arquivo, "%d", &yCab[i][j]);
+            // Check(yCab[i][j]);
+            // if (1){
+            //     printf("Erro, o Nonograma deve conter apenas números positivos inteiros.\nVerifique o arquivo e tente novamente!");
+            //     return 0;
+
+
+
+
+
+
+
+// função inutil que fiz pra contar quantos numeros em cada linha, porém o primeiro numero da linha ja dizia quantos tinha.
+
+                // contando qual fileira tem a maior quantidade de números.
+    while(fgets(str, sizeof(str), arquivo) != NULL){
+        contN = 0;
+        if (str[0] == '.')
+            break;
+        char *token = strtok(str, " "); // separa a string em tokens, usando o espaço como delimitador. Meu delimitador é o 'espaço'.
+        while (token != NULL) {         // enquanto houver tokens.
+        contN++;                       // conta quantos tokens tem na linha.
+            token = strtok(NULL, " "); // token recebe null para que no proximo loop ele comece da posição armazenada do ultimo token.
+
+        for (int i = 0; i < col; i++){
+            pos[i].x = contN;
+            //printf("DEBUG ----> contN LINHA %d: TEM %d\n", i, pos[i].x);
+        }
+        
+        }                               // repete o processo até não haver mais tokens.
+
+        
+        if (contN > maiorNlinha){      
+            maiorNlinha = contN;
+        }
+    }
+
+
+
+
+    
+    fseek(arquivo, 0, SEEK_SET); // retorna o ponteiro do arquivo para o inicio.
+    int ignorar;
+    fscanf(arquivo, "%d %d", &ignorar, &ignorar); // ignora a primeira linha do arquivo. 
+
+    // função ignorar
+
+
+
+
+                if (j == 0 && i != varLinAux){
+                int ignorar;
+                fscanf(arquivo, "%d", &ignorar);
+                continue;
+            }
+
+
+
+
+
+
+                for (int i = 0; i < varLinAux+1; i++){
+        espacador(maiorNlinha);
+        for (int j = 0; j < col; j++){
+            if (i == varLinAux){
+                xCab[i][j] = 65+j;
+                xCharCab[i][j] = xCab[i][j];
+                printf("%2c ", xCharCab[i][j]);
+            }
+            else{
+                fscanf(arquivo, "%d", &xCab[i][j]);
+                printf("%2d ", xCab[i][j]);
+            }
+        }
+        printf("\n");
+    }
+
+
+
+        // unica utilidade desse for é pular linhas até o inicio da matriz x.
+    // char buffer[1024];
+    // for(int i = 0; i < lin+1; i++) {
+    //     if(fgets(buffer, sizeof(buffer), arquivo) == NULL) {
+    //     // final do arquivo antes de pular todas as linhas desejadas
+    //     break;
+    //     }
+    // }
+
+
+
+    // proximos itens do arquivo
+    // int um, dois, tres, quatro;
+    // fscanf(arquivo, "%d", &um);
+    // fscanf(arquivo, "%d", &dois);
+    // fscanf(arquivo, "%d", &tres);
+    // fscanf(arquivo, "%d", &quatro);
+    // printf("Debug ----> %d %d %d %d", um, dois, tres, quatro);
+
+    // Leitura da matriz yCab
+
+
+    ////////////////////////////
+
+    tentativa quase completa de printar a tabela do eixo xCab
+
+    // Print do xCab quase, falta alinhas
+// for (int k = maiorValorX - 1; k >= 0; k--){
+//     // Adicione espaços para alinhar com o eixo Y
+//     for (int s = 0; s < maiorValorY+1; s++) {
+//         printf("%-2c ", 32);
+//     }
+//     printf("  "); // Espaço extra para o eixo Y
+
+//     for (int j = 0; j < col; j++) {
+//         if (k < quantosPorLinhaX[j]) {
+//             printf("%-2d ", xCab[j][k]);
+//         } else {
+//             printf("  ");
+//         }
+//     }
+//     printf("\n");
+// }
+
+//////////////////////
+sei nada
+
+
+        // while(1){
+        // __fpurge(stdin);
+        // fgets(Comando, 10, stdin);
+        // if (Comando[0] == 's' && Comando[1] == 'a' && Comando[2] == 'i' && Comando[3] == 'r'){
+        //     printf("Saindo do jogo...\n");
+        //     return -1;
+        // }
+        // else if (Comando[0] == 'r' && Comando[1] == 'e' && Comando[2] == 's' && Comando[3] == 'o' && Comando[4] == 'l' && Comando[5] == 'v' && Comando[6] == 'e' && Comando[7] == 'r'){
+        //     resolver();
+        //     return 0;
+        // }
+        // else if (Comando[0] == 's' && Comando[1] == 'a' && Comando[2] == 'l' && Comando[3] == 'v' && Comando[4] == 'a' && Comando[5] == 'r'){
+        //     printf("Salvando o jogo...\n");
+        //     funcaoSalvar();
+        // }
+        // else if ((Comando[0] == 'x') || (Comando[0] == '-') || (Comando[0] == '.') && (Comando[1] == ' ') && (Comando[2] >= 65) && (Comando[2] <= 90) && (Comando[3] >= 65) && (Comando[3] <= 90)){
+        //     printf("Comando válido!\n");
+        // }
+        // else{
+        //     printf("Comando inválido! Tente novamente.\n");
+        // }
+        // }
+
