@@ -1,0 +1,97 @@
+
+    if(contN > maiorNlinha)   // garante que seja adicionado a maiorNlinha mesmo se n houver quebra de linha no final.
+        maiorNlinha = contN;
+    
+
+    printf("DEBUG %d", maiorNlinha);
+
+
+estrutura q n usei
+// typedef struct{
+//     int x;
+//     int y;
+// } coordenadas;
+
+
+
+
+função check, n usada
+             // fscanf(arquivo, "%d", &yCab[i][j]);
+            // Check(yCab[i][j]);
+            // if (1){
+            //     printf("Erro, o Nonograma deve conter apenas números positivos inteiros.\nVerifique o arquivo e tente novamente!");
+            //     return 0
+
+// função inutil que fiz pra contar quantos numeros em cada linha, porém o primeiro numero da linha ja dizia quantos tinha.
+
+                // contando qual fileira tem a maior quantidade de números.
+    while(fgets(str, sizeof(str), arquivo) != NULL){
+        contN = 0;
+        if (str[0] == '.')
+            break;
+        char *token = strtok(str, " "); // separa a string em tokens, usando o espaço como delimitador. Meu delimitador é o 'espaço'.
+        while (token != NULL) {         // enquanto houver tokens.
+        contN++;                       // conta quantos tokens tem na linha.
+            token = strtok(NULL, " "); // token recebe null para que no proximo loop ele comece da posição armazenada do ultimo token.
+
+        for (int i = 0; i < col; i++){
+            pos[i].x = contN;
+            //printf("DEBUG ----> contN LINHA %d: TEM %d\n", i, pos[i].x);
+        }
+        
+        }                               // repete o processo até não haver mais tokens.
+
+        
+        if (contN > maiorNlinha){      
+            maiorNlinha = contN;
+        }
+    }
+
+
+
+
+    
+    fseek(arquivo, 0, SEEK_SET); // retorna o ponteiro do arquivo para o inicio.
+    int ignorar;
+    fscanf(arquivo, "%d %d", &ignorar, &ignorar); // ignora a primeira linha do arquivo. 
+
+    // função ignorar
+
+    // proximos itens do arquivo
+    // int um, dois, tres, quatro;
+    // fscanf(arquivo, "%d", &um);
+    // fscanf(arquivo, "%d", &dois);
+    // fscanf(arquivo, "%d", &tres);
+    // fscanf(arquivo, "%d", &quatro);
+    // printf("Debug ----> %d %d %d %d", um, dois, tres, quatro);
+
+    // Leitura da matriz yCab
+
+
+    ////////////////////////////
+
+/////////////////// debugadores 
+das letras
+        // printf("DEBUG xVetLetras: ");
+        // for(int j = 0; j < col; j++){  
+        //     printf("%c ", xVetLetras[j]);
+        // }
+        // printf("\n");
+
+        // printf("DEBUG yVetLetras: ");
+        // for(int i = 0; i < lin; i++){
+        //     printf("%c ", yVetLetras[i]);
+        // }
+
+// criação da matriz com espaços em branco do canto superior esquerdo.
+        char matEspacos[maiorValorY+1][maiorValorX+1];
+            for (int i = 0; i < maiorValorX+1; i++){
+                for (int j = 0; j < maiorValorY+1; j++){
+                    matEspacos[i][j] = '_';
+                    printf("%2c ", matEspacos[i][j]);
+                    }
+                    printf("\n");
+            }
+
+// for(int i = 0; i < lin; i++)
+//     printf("DEBUG quantosPorLinhaY[%d]: %d\n", i, quantosPorLinhaY[i]);
