@@ -78,6 +78,8 @@ void imprimeCabecalhocol(int *qnumero, int tamanhocol, int **matcol, int numspc)
         printf("%c  ", 'A' + i);
     }
     printf("\n");
+    free(vdespc);
+    free(vdespcaux);
 }
 
 void imprimeCabecalholin(int *qnumero, int tamanholin, int **matlin, int maiorq, int maiornum, char **matc,int tamcol){   
@@ -170,8 +172,8 @@ void salvaNonograma(char nomearq[], int **lin, int **col, int tamlin, int tamcol
     // Salva a matriz de char editada pelo usuario.
     for (int i = 0; i < tamlin; i++){
         for (int j = 0; j < tamcol; j++){
-            __fpurge
-            (stdin);
+            
+            __fpurge(stdin);
             fprintf(salva, "%c ", matc[i][j]);
         }
         fprintf(salva, "\n");   
@@ -365,7 +367,7 @@ int main(int argc, char **argv){
         
         // Comando para sair do jogo.
         if(strcmp(comando,"sair") == 0){
-            return 0;        
+            break;        
         }
 
     } while (1);
@@ -384,8 +386,14 @@ int main(int argc, char **argv){
         free(lin[i]);
     }
     free(lin);
+    
     free(qtnumlin);
     free(qtnumcol);
-    //liberaMatriz(col, tamcol);
+    
+    for (int i = 0; i < tamcol; i++){
+        free(col[i]);
+    }
+    free(col);
+    
     return 0;
 }
