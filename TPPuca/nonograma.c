@@ -4,7 +4,6 @@
 #include <string.h>
 #include <stdio_ext.h>
 #include <math.h>
-#include <unistd.h> // so serve pra colocar um timing no "salvar"
 
 // C O R E S 
 // cores e formato de texto
@@ -13,45 +12,24 @@
 #define ANSI_COLOR_BLACK      "\x1b[30m"
 #define ANSI_COLOR_RED        "\x1b[31m"
 #define ANSI_COLOR_GREEN      "\x1b[32m"
-#define ANSI_COLOR_YELLOW     "\x1b[33m"
 #define ANSI_COLOR_BLUE       "\x1b[34m"
-#define ANSI_COLOR_MAGENTA    "\x1b[35m"
-#define ANSI_COLOR_CYAN       "\x1b[36m"
 #define ANSI_COLOR_WHITE      "\x1b[37m"
 #define ANSI_BG_COLOR_BLACK   "\x1b[40m"
 #define ANSI_BG_COLOR_RED     "\x1b[41m"
 #define ANSI_BG_COLOR_GREEN   "\x1b[42m"
-#define ANSI_BG_COLOR_YELLOW  "\x1b[43m"
-#define ANSI_BG_COLOR_BLUE    "\x1b[44m"
-#define ANSI_BG_COLOR_MAGENTA "\x1b[45m"
-#define ANSI_BG_COLOR_CYAN    "\x1b[46m"
 #define ANSI_BG_COLOR_WHITE   "\x1b[47m"
 
 // macros para facilitar o uso
 #define BOLD(string)       ANSI_BOLD             string ANSI_RESET
 #define BLACK(string)      ANSI_COLOR_BLACK      string ANSI_RESET
-#define BLUE(string)       ANSI_COLOR_BLUE       string ANSI_RESET
 #define RED(string)        ANSI_COLOR_RED        string ANSI_RESET
 #define GREEN(string)      ANSI_COLOR_GREEN      string ANSI_RESET
-#define YELLOW(string)     ANSI_COLOR_YELLOW     string ANSI_RESET
-#define BLUE(string)       ANSI_COLOR_BLUE       string ANSI_RESET
-#define MAGENTA(string)    ANSI_COLOR_MAGENTA    string ANSI_RESET
-#define CYAN(string)       ANSI_COLOR_CYAN       string ANSI_RESET
 #define WHITE(string)      ANSI_COLOR_WHITE      string ANSI_RESET
-#define BG_BLACK(string)   ANSI_BG_COLOR_BLACK   string ANSI_RESET
-#define BG_BLUE(string)    ANSI_BG_COLOR_BLUE    string ANSI_RESET
-#define BG_RED(string)     ANSI_BG_COLOR_RED     string ANSI_RESET
-#define BG_GREEN(string)   ANSI_BG_COLOR_GREEN   string ANSI_RESET
-#define BG_YELLOW(string)  ANSI_BG_COLOR_YELLOW  string ANSI_RESET
-#define BG_BLUE(string)    ANSI_BG_COLOR_BLUE    string ANSI_RESET
-#define BG_MAGENTA(string) ANSI_BG_COLOR_MAGENTA string ANSI_RESET
-#define BG_CYAN(string)    ANSI_BG_COLOR_CYAN    string ANSI_RESET
 #define BG_WHITE(string)   ANSI_BG_COLOR_WHITE   string ANSI_RESET
 
 
 
 // Protótipos (descrições na implementação se necessário.)
-void reiniciarMatJogo(char **matJogo, int lin, int col);
 int lerMatjogo(FILE *arquivo, char **matJogo, int lin, int col);
 int** criaMatriz(int m, int n);
 void liberaMatriz(int** matriz, int m);
@@ -61,7 +39,7 @@ void printarTudo(char **matrizJogo, int lin, int col, int maiorValorX, int maior
 void resolver();
 void systemClear();
 void chamarComandos(); 
-void conferirJogo(char **matJogo, int lin, int col, int **yCab, int *qPLinY);
+int conferirJogo(char **matJogo, int lin, int col, int **yCab, int **xCab, int *qPLinY, int *qPLinX);
 int funcaoSalvar(FILE *arquivo,char nomeArquivo[50], char **matJogo, int lin, int col);
 void comandoParaCoord(char Comando[50], int coord[2]); 
 void marcandoTabela(int coord[2], char **matJogo, char Comando[50]);
@@ -107,36 +85,39 @@ int main(int argc, char *argv[]){
 
     // Descricao do jogo e comandos
     __fpurge(stdin);
-    printf(BG_WHITE(BLACK(BOLD("\n\t      Bem vindo ao Nonograma!      \t"))) "\n");
-    printf("\tDigite 'x' , '-' ou '.' seguido das coordenadas referentes a colunas e linhas para marcar as casas.");
+    printf(BG_WHITE(BLACK(BOLD("\n\t      BEM VINDO AO NONOGRAMA!      \t"))) "\n");
     __fpurge(stdin);
     printf((BG_WHITE(BLACK(BOLD("\n\t      C O M A N D O S      \t"))) "\n"));
+    printf("\n\tDigite 'x' , '-' ou '.' seguido das coordenadas referentes a colunas e linhas para marcar as casas.");
     printf("\t"BOLD(RED("  .  "))"\t\tPara marcar as casas como em branco.\n""\t"BOLD(RED("  x  "))"\t\tmarca as casas como 'coloridas'.\n""\t"BOLD(RED("  -  "))"\t\tmarca casas que não devem ser marcadas.'\n");
     printf("\t"BOLD(RED("resolver "))"\tPara que o programa resolva o jogo para você.\n");
     printf("\t"BOLD(RED("salvar   "))"\tPara salvar o jogo.\n");
     printf("\t"BOLD(RED("sair     "))"\tPara sair do jogo.\n");
-    printf("\t"BOLD(RED("reiniciar"))"\tPara reiniciar o tabuleiro.\n\n");
+    //printf("\t"BOLD(RED("reiniciar"))"\tPara reiniciar o tabuleiro.\n\n");
     
 
     quantosPorLinhaX = malloc(col * sizeof(int));
     quantosPorLinhaY = malloc(lin * sizeof(int));
 
 
-    int num, contLin=0, contCol=0; //contadores e variável para pegar o primeiro termo de cada linha do arquivo.
-    while ((contLin < lin || contCol < col) && fscanf(arquivo, "%d%*[^\n]", &num) == 1) {  // %d%*[^\n] - "%*" ignora o que vem depois do %d até o \n   
-        if (contLin < lin) {                                                               // especificado em [^\n].
-            quantosPorLinhaY[contLin] = num; // salva os valores da primeira linha (quantidade de números por linha). para matriz yCab.
-            if (num > maiorValorY) {  // salva o maior valor para definir o espaçamento do cabeçalho.
+    int num, contLin = 0, contCol = 0; // contadores e variável para pegar o primeiro termo de cada linha do arquivo.
+    while ((contLin < lin || contCol < col) && fscanf(arquivo, "%d", &num) == 1) {
+        if (contLin < lin) {
+            quantosPorLinhaY[contLin] = num; // salva os valores da primeira linha (quantidade de números por linha) para matriz yCab.
+            if (num > maiorValorY) { // salva o maior valor para definir o espaçamento do cabeçalho.
                 maiorValorY = num; // linhas
             }
             contLin++;
-        } else if (contCol < col) { 
-            quantosPorLinhaX[contCol] = num; // salva os valores da segunda linha (quantidade de números por coluna). para matriz xCab.
+        } else if (contCol < col) {
+            quantosPorLinhaX[contCol] = num; // salva os valores da segunda linha (quantidade de números por coluna) para matriz xCab.
             if (num > maiorValorX) {
                 maiorValorX = num; // colunas
             }
             contCol++;
         }
+        // Ignora o restante da linha
+        int c;
+        while ((c = fgetc(arquivo)) != '\n' && c != EOF);
     } // a função desse while é salvar os valores de x e y em vetores e salvar o maior valor de cada um para definir o cabeçalho corretamente.
 
     
@@ -166,7 +147,7 @@ int main(int argc, char *argv[]){
 
     printarTudo(matJogo, lin, col, maiorValorX, maiorValorY, quantosPorLinhaX, quantosPorLinhaY, xCab, yCab, VetLetras);
     printf("\n");
-    conferirJogo(matJogo, lin, col, yCab, quantosPorLinhaY);
+    conferirJogo(matJogo, lin, col, yCab, xCab, quantosPorLinhaY, quantosPorLinhaX);
 
     ////////////// Loop principal de comandos //////////////
     while(1)
@@ -187,15 +168,7 @@ int main(int argc, char *argv[]){
             else if (sn == 'N' || sn == 'n')  continue;
             else {printf("Comando inválido!"); break;}
         }
-        else if (strcmp(Comando, "comandos") == 0){
-            chamarComandos();
-            continue;
-        }
-        else if (strcmp(Comando, "reiniciar") == 0){
-            reiniciarMatJogo(matJogo, lin, col);
-            printarTudo(matJogo, lin, col, maiorValorX, maiorValorY, quantosPorLinhaX, quantosPorLinhaY, xCab, yCab, VetLetras);
-            continue;
-        }
+
         else if (strcmp(Comando, "resolver") == 0){
             resolver();
             return 0;
@@ -212,13 +185,19 @@ int main(int argc, char *argv[]){
             funcaoSalvar(arquivo, nomeArquivo, matJogo, lin, col);
         }
         
-        else if ((Comando[0] == 'x') || (Comando[0] == '-') || (Comando[0] == '.'))
+        else if ((Comando[0] == 'x') || (Comando[0] == 'X') || (Comando[0] == '-') || (Comando[0] == '.'))
         {
             // checagens, primeira se o comando no indice 2 e 3 do vetor 'Comando' estão OK
-            if ((Comando[1] != ' ') || (Comando[2] < 'A' || Comando[2] > 'Z') || (Comando[3] < 'A' || Comando[3] > 'Z')){
-                printf("Comando inválido! Tente novamente e verifique se as cordenadas estão corretas.\n");
+            if (Comando[4] != '\0' && Comando[4] != '\n' )
+            {
+                systemClear();
+                printf("\tComando inválido!\n\tO 'x' deve ser seguido apenas das coordenadas de A a Z.\n\tExemplo: x AB\n");
+            }
+            
+            else if ((Comando[1] != ' ') || (Comando[2] < 'A' || Comando[2] > 'Z') || (Comando[3] < 'A' || Comando[3] > 'Z')){
+                printf("\tComando inválido! Tente novamente e verifique se as cordenadas estão corretas.\n");
             } else if ((Comando[2] - 'A' >= lin) || (Comando[3] - 'A' >= col)) {
-                    printf("Comando inválido! As coordenadas inseridas estão fora do tabuleiro.\n");
+                    printf("\tComando inválido! As coordenadas inseridas estão fora do tabuleiro.\n");
                 }
                 else
                 {
@@ -228,13 +207,15 @@ int main(int argc, char *argv[]){
                 {
                     marcandoTabela(coord, matJogo,Comando);
                     systemClear();
-                    conferirJogo(matJogo, lin, col, yCab, quantosPorLinhaY);            
+                    int teste = conferirJogo(matJogo, lin, col, yCab, xCab, quantosPorLinhaY, quantosPorLinhaX);
+                        if( teste == 2)
+                        matJogo[coord[0]][coord[1]] = '.';            
                 }
                 else
                 {
                     printf("Comando inválido! As coordenadas inseridas estão fora do tabuleiro.\n");
                 }
-                } 
+                }
                 printarTudo(matJogo, lin, col, maiorValorX, maiorValorY, quantosPorLinhaX, quantosPorLinhaY, xCab, yCab, VetLetras);
         }   
         else{
@@ -282,7 +263,8 @@ void printarTudo(char **matrizJogo, int lin, int col, int maiorValorX, int maior
     }
     printf("    "); //alinhamento antes de priintar algo
     for (int j = 0; j < col; j++) {
-        printf("%-3c", VetLetras[j]);
+        printf("\033[0;36m%-3c\033[0m", VetLetras[j]);
+        //printf("%-3c", VetLetras[j]);
     }
     printf("\n");
 
@@ -298,7 +280,8 @@ void printarTudo(char **matrizJogo, int lin, int col, int maiorValorX, int maior
             printf("%3d", yCab[i][j]);
         }
     printf("%-1c", 32); // necessário pra simular o mesmo efeito que a distancia entre caractere um em cima do outro.
-    printf("%-3c", VetLetras[i]); // do eixo Y
+    printf("\033[0;36m%-3c\033[0m", VetLetras[i]);
+    //printf("%-3c", VetLetras[i]); // do eixo Y
         for (int j = 0; j < col; j++) {
             printf("%-3c", matrizJogo[i][j]);
     }
@@ -343,12 +326,12 @@ int funcaoSalvar(FILE *arquivo,char nomeArquivo[50],char **matJogo, int lin, int
     rewind(arquivo); // retorna o ponteiro do arquivo para o inicio.
     FILE *arquivoSalvar = fopen(nomeArquivo, "w+");
     if (arquivoSalvar == NULL){
-        printf("Não foi possível criar o arquivo. Tente novamente!");
+        printf("\tNão foi possível criar o arquivo. Tente novamente!");
         return 1; // retorna 1 q vai cair no while(1) novamente.
     }
-    //Copiando tudo de um arquivo para o outro.
+    //Copiando tudo de um arquivo para o que vai ser gerado no salvar.
     char c;
-    printf("\nJogo salvo!\n");
+    printf("\n\tJogo salvo!\t Seu aquivo pode ser encontrado no mesmo diretório do arquivo em C.\n");
     while ((c = fgetc(arquivo)) != EOF) {
         if (c == 'x' || c == '-' || c == '.') {
             break; // Sai do loop se o caractere for 'x', '-' e '.'
@@ -371,42 +354,52 @@ void comandoParaCoord(char Comando[50], int coord[2]){
     //printf("DEBUG Coordenadas: %d %d\n", coord[0], coord[1]);
 }
 
-void conferirJogo(char **matJogo, int lin, int col, int **yCab, int *qPLinY){
-    int countX = 0, somaLinhas = 0, linhaOK = 0; //colunaOK = 0, countY = 0, somaColunas = 0;
+int conferirJogo(char **matJogo, int lin, int col, int **yCab, int **xCab, int *qPLinY, int *qPLinX){ // verificar se o numero de marcações de linhas e colunas estão corretos.
+    int countX = 0, somaLinhas = 0, linhaOK = 0, colunaOK = 0, countY = 0, somaColunas = 0;
     for(int i = 0; i < lin; i++){
         countX = 0;
         for(int j = 0; j < col; j++){
             if (matJogo[i][j] == 'x'){
                 countX++;
             }
+            if (i == 0) { 
+                for(int k = 0; k < lin; k++){
+                    if (matJogo[k][j] == 'x'){
+                        countY++;
+                    }
+                }
+                for(int k = 0; k < qPLinX[j]; k++){
+                    somaColunas += xCab[j][k];
+                }
+                if (countY == somaColunas){
+                    colunaOK++;
+                } else if (countY > somaColunas){
+                    printf("\t\n\nErro, usuário infligiu a regra do Nonograma ao ultrapassar o número de marcações!\n\tSua jogada foi desfeita.\n");
+                    return 2;
+                }
+                countY = 0;
+                somaColunas = 0;
+            }
         }
-
-
         for(int j = 0; j < qPLinY[i]; j++){
             somaLinhas += yCab[i][j];
         }
         if (countX == somaLinhas){
-            //printf("Linha %d correta!\n", i);
             linhaOK++;
-            //printf("DEBUG linhasOK: %d\n", linhaOK);
-            if (linhaOK == lin){
-                printf((BG_WHITE(BLACK(BOLD("\n\tPARABÉNS! Você concluiu o Nonograma!\n\tObrigado por jogar!"))) "\n"));
-                printf("Digite sair para finalizar o programa.\n");
-            }
         } else if (countX > somaLinhas){
-            printf("Erro, usuário infligiu a regra do Nonograma!\n");
+            printf("\t\n\nErro, usuário infligiu a regra do Nonograma ao ultrapassar o número de marcações!\n\tSua jogada foi desfeita.\n");
+            return 2;
         }
+        countX = 0;
+        somaLinhas = 0;
     }
+    if (linhaOK == lin && colunaOK == col){
+        printf((BG_WHITE(BLACK(BOLD("\n\tPARABÉNS! Você concluiu o Nonograma!\n\tObrigado por jogar!"))) "\n"));
+        printf("\t\nDigite sair para finalizar o programa.\n");
+    }
+    return 1;
 }
 
-
-void reiniciarMatJogo(char **matJogo, int lin, int col){
-    for(int i = 0; i < lin; i++){
-        for(int j = 0; j < col; j++){
-            matJogo[i][j] = 46;
-        }
-    }
-}
 
 int lerMatjogo(FILE *arquivo, char **matJogo, int lin, int col) {
     fseek(arquivo, 0, SEEK_SET); // Volta ao início do arquivo
@@ -432,7 +425,7 @@ int lerMatjogo(FILE *arquivo, char **matJogo, int lin, int col) {
 
 void resolver(){
     system("clear");
-    printf("Função não implementada. Programa "BOLD(RED("sem gabarito"))" gabarito...\n");
+    printf("Função não implementada. Nonograma "BOLD(RED("sem gabarito"))".\n\n\tEncerrando programa...\n");
     printf(BG_WHITE(BLACK(BOLD("\n\tObrigado por jogar!\t"))) "\n");
 
 }
@@ -440,14 +433,11 @@ void resolver(){
 void chamarComandos(){
         // Descricao do jogo e comandos
     __fpurge(stdin);
-    __fpurge(stdin);
-    printf((BG_WHITE(BLACK(BOLD("\n\t      C O M A N D O S      \t"))) "\n"));
-    printf("\tDigite 'x' , '-' ou '.' seguido das coordenadas referentes a colunas e linhas para marcar as casas.\n");
+    printf((BG_WHITE(BLACK(BOLD("\n\t\t\t      C O M A N D O S      \t"))) "\n"));
     printf("\t"BOLD(RED("  .  "))"\t\tPara marcar as casas como em branco.\n""\t"BOLD(RED("  x  "))"\t\tmarca as casas como 'coloridas'.\n""\t"BOLD(RED("  -  "))"\t\tmarca casas que não devem ser marcadas.'\n");
     printf("\t"BOLD(RED("resolver "))"\tPara que o programa resolva o jogo para você.\n");
     printf("\t"BOLD(RED("salvar   "))"\tPara salvar o jogo.\n");
     printf("\t"BOLD(RED("sair     "))"\tPara sair do jogo.\n");
-    printf("\t"BOLD(RED("reiniciar"))"\tPara reiniciar o tabuleiro.\n\n");
 }
 
 void systemClear(){
