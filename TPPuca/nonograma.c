@@ -14,6 +14,10 @@
 #define ANSI_COLOR_GREEN      "\x1b[32m"
 #define ANSI_COLOR_BLUE       "\x1b[34m"
 #define ANSI_COLOR_WHITE      "\x1b[37m"
+#define ANSI_BG_COLOR_BLACK   "\x1b[40m"
+#define ANSI_BG_COLOR_RED     "\x1b[41m"
+#define ANSI_BG_COLOR_GREEN   "\x1b[42m"
+#define ANSI_BG_COLOR_WHITE   "\x1b[47m"
 
 // macros para facilitar o uso
 #define BOLD(string)       ANSI_BOLD             string ANSI_RESET
@@ -22,6 +26,8 @@
 #define GREEN(string)      ANSI_COLOR_GREEN      string ANSI_RESET
 #define WHITE(string)      ANSI_COLOR_WHITE      string ANSI_RESET
 #define BG_WHITE(string)   ANSI_BG_COLOR_WHITE   string ANSI_RESET
+
+
 
 // Protótipos (descrições na implementação se necessário.)
 int lerMatjogo(FILE *arquivo, char **matJogo, int lin, int col);
