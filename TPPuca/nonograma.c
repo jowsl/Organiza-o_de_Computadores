@@ -88,7 +88,7 @@ int main(int argc, char *argv[]){
     printf(BG_WHITE(BLACK(BOLD("\n\t      BEM VINDO AO NONOGRAMA!      \t"))) "\n");
     __fpurge(stdin);
     printf((BG_WHITE(BLACK(BOLD("\n\t      C O M A N D O S      \t"))) "\n"));
-    printf("\n\tDigite 'x' , '-' ou '.' seguido das coordenadas referentes a colunas e linhas para marcar as casas.");
+    printf("\n\tDigite 'x' , '-' ou '.' seguido das coordenadas referentes a colunas e linhas para marcar as casas.\n");
     printf("\t"BOLD(RED("  .  "))"\t\tPara marcar as casas como em branco.\n""\t"BOLD(RED("  x  "))"\t\tmarca as casas como 'coloridas'.\n""\t"BOLD(RED("  -  "))"\t\tmarca casas que não devem ser marcadas.'\n");
     printf("\t"BOLD(RED("resolver "))"\tPara que o programa resolva o jogo para você.\n");
     printf("\t"BOLD(RED("salvar   "))"\tPara salvar o jogo.\n");
@@ -400,7 +400,6 @@ int conferirJogo(char **matJogo, int lin, int col, int **yCab, int **xCab, int *
     return 1;
 }
 
-
 int lerMatjogo(FILE *arquivo, char **matJogo, int lin, int col) {
     fseek(arquivo, 0, SEEK_SET); // Volta ao início do arquivo
     int c;
@@ -416,7 +415,6 @@ int lerMatjogo(FILE *arquivo, char **matJogo, int lin, int col) {
                     return 0; // se chegar no final do file retorna 0 antes de ler algum lixo
                 }
             } while (c != 'x' && c != '-' && c != '.');
-
             matJogo[i][j] = c;
         }
     }
@@ -427,11 +425,10 @@ void resolver(){
     system("clear");
     printf("Função não implementada. Nonograma "BOLD(RED("sem gabarito"))".\n\n\tEncerrando programa...\n");
     printf(BG_WHITE(BLACK(BOLD("\n\tObrigado por jogar!\t"))) "\n");
-
 }
 
 void chamarComandos(){
-        // Descricao do jogo e comandos
+    // Descricao do jogo e comandos
     __fpurge(stdin);
     printf((BG_WHITE(BLACK(BOLD("\n\t\t\t      C O M A N D O S      \t"))) "\n"));
     printf("\t"BOLD(RED("  .  "))"\t\tPara marcar as casas como em branco.\n""\t"BOLD(RED("  x  "))"\t\tmarca as casas como 'coloridas'.\n""\t"BOLD(RED("  -  "))"\t\tmarca casas que não devem ser marcadas.'\n");
@@ -446,4 +443,4 @@ void systemClear(){
     printf("\n");
     printf("\n");
     chamarComandos();   
-}   
+}
