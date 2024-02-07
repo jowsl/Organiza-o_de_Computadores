@@ -64,7 +64,7 @@ int main(int argc, char *argv[]){
     }
         
     // lê as dimensões do jogo e valida
-    fscanf(arquivo, "%d %d", &lin, &col); 
+    fscanf(arquivo, "%d %d", &lin, &col);
     if( lin > 26 || col > 26){
         printf("\nErro! \nAs dimensões máximas são 26x26! Verifique o arquivo e tente novamente.\n\n");
         return 0;
