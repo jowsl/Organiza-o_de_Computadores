@@ -27,8 +27,6 @@
 #define WHITE(string)      ANSI_COLOR_WHITE      string ANSI_RESET
 #define BG_WHITE(string)   ANSI_BG_COLOR_WHITE   string ANSI_RESET
 
-
-
 // Protótipos (descrições na implementação se necessário.)
 int lerMatjogo(FILE *arquivo, char **matJogo, int lin, int col);
 int** criaMatriz(int m, int n);
@@ -44,9 +42,8 @@ int funcaoSalvar(FILE *arquivo,char nomeArquivo[50], char **matJogo, int lin, in
 void comandoParaCoord(char Comando[50], int coord[2]); 
 void marcandoTabela(int coord[2], char **matJogo, char Comando[50]);
 
-
 int main(int argc, char *argv[]){
-    
+
     if (argc < 2){ //argv[0] deve ser nome do programa e argv[1] deve ser o nome do arquivo.
         printf("\n\tErro!\n\tVerifique se foi"BOLD(" digitado corretamente")" o nome do arquivo e executável do programa.\n\n");
         return 0;
@@ -94,11 +91,9 @@ int main(int argc, char *argv[]){
     printf("\t"BOLD(RED("salvar   "))"\tPara salvar o jogo.\n");
     printf("\t"BOLD(RED("sair     "))"\tPara sair do jogo.\n");
     //printf("\t"BOLD(RED("reiniciar"))"\tPara reiniciar o tabuleiro.\n\n");
-    
 
     quantosPorLinhaX = malloc(col * sizeof(int));
     quantosPorLinhaY = malloc(lin * sizeof(int));
-
 
     int num, contLin = 0, contCol = 0; // contadores e variável para pegar o primeiro termo de cada linha do arquivo.
     while ((contLin < lin || contCol < col) && fscanf(arquivo, "%d", &num) == 1) {
@@ -241,7 +236,7 @@ void marcandoTabela(int coord[2], char **matJogo,char Comando[50]){
 
 void printarTudo(char **matrizJogo, int lin, int col, int maiorValorX, int maiorValorY, int *quantosPorLinhaX, int *quantosPorLinhaY, int **xCab, int **yCab, char VetLetras[26]) {
     printf("\n");
-// Print do xCab.
+    // Print do xCab.
     for (int k = maiorValorX - 1; k >= 0; k--){ // aqui so usei ao contrário para printar os valores de cima para baixo.
         for (int s = 0; s < maiorValorY; s++) {
             printf("   "); // espaço pra alinhar
