@@ -26,7 +26,7 @@
    HELP-TEXT TEXT-X TEXT-UPPER-Y "left" "top"
    (place-image/align
     HELP-TEXT2 TEXT-X TEXT-LOWER-Y "left" "bottom"
-    (empty-scene WIDTH HEIGHT "grey"))))
+    (empty-scene WIDTH HEIGHT "white"))))
 
 ;; a main
 (define (start lower upper)
