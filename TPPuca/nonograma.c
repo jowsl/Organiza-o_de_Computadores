@@ -144,7 +144,7 @@ int main(int argc, char *argv[]){
     printf("\n");
     conferirJogo(matJogo, lin, col, yCab, xCab, quantosPorLinhaY, quantosPorLinhaX);
 
-    ////////////// Loop principal de comandos //////////////
+    /////////////////////////// Loop principal de comandos ///////////////////////////
     while(1)
     {
         printf("\nDigite um comando: ");
@@ -180,42 +180,48 @@ int main(int argc, char *argv[]){
             funcaoSalvar(arquivo, nomeArquivo, matJogo, lin, col);
         }
         
-        else if ((Comando[0] == 'x') || (Comando[0] == 'X') || (Comando[0] == '-') || (Comando[0] == '.'))
-        {
-            // checagens, primeira se o comando no indice 2 e 3 do vetor 'Comando' estão OK
-            if (Comando[4] != '\0' && Comando[4] != '\n' )
-            {
+        else if ((Comando[0] == 'x') || (Comando[0] == 'X') || (Comando[0] == '-') || (Comando[0] == '.')){ 
+            // checagens
+
+            if (Comando[4] != '\0' && Comando[4] != '\n' ){
                 systemClear();
                 printf("\tComando inválido!\n\tO 'x' deve ser seguido apenas das coordenadas de A a Z.\n\tExemplo: x AB\n");
             }
             
-            else if ((Comando[1] != ' ') || (Comando[2] < 'A' || Comando[2] > 'Z') || (Comando[3] < 'A' || Comando[3] > 'Z')){
+            else if ((Comando[1] != ' ') || (Comando[2] < 'A' || Comando[2] > 'z') || (Comando[3] < 'A' || Comando[3] > 'z')){
+                if ((Comando[2] >= '[' && Comando[2] <= '`') || (Comando[3] >= '[' && Comando[3] <= '`')){
+                    systemClear();
+                    printf("\tComando inválido! As coordenadas devem estar entre A/a e Z/.\n");
+                }
                 printf("\tComando inválido! Tente novamente e verifique se as cordenadas estão corretas.\n");
-            } else if ((Comando[2] - 'A' >= lin) || (Comando[3] - 'A' >= col)) {
+                systemClear();
+                } 
+
+            else if ((Comando[2] - 'a' >= lin) || (Comando[3] - 'a' >= col)) {
+                    systemClear();
                     printf("\tComando inválido! As coordenadas inseridas estão fora do tabuleiro.\n");
                 }
-                else
-                {
+
+                else{
                     //printf("debug Comando válido!\n");
-                comandoParaCoord(Comando, coord);
-                if (coord[0] <= lin && coord[1] <= col)
-                {
-                    marcandoTabela(coord, matJogo,Comando);
-                    systemClear();
-                    int teste = conferirJogo(matJogo, lin, col, yCab, xCab, quantosPorLinhaY, quantosPorLinhaX);
+                    comandoParaCoord(Comando, coord);
+                    if (coord[0] <= lin && coord[1] <= col){
+                        marcandoTabela(coord, matJogo,Comando);
+                        systemClear();
+                        int teste = conferirJogo(matJogo, lin, col, yCab, xCab, quantosPorLinhaY, quantosPorLinhaX);
                         if( teste == 2)
-                        matJogo[coord[0]][coord[1]] = '.';            
+                            matJogo[coord[0]][coord[1]] = '.';            
+                    }
+                    else{
+                        printf("Comando inválido! As coordenadas inseridas estão fora do tabuleiro [][][][].\n");
+                    }
                 }
-                else
-                {
-                    printf("Comando inválido! As coordenadas inseridas estão fora do tabuleiro.\n");
-                }
-                }
+
                 printarTudo(matJogo, lin, col, maiorValorX, maiorValorY, quantosPorLinhaX, quantosPorLinhaY, xCab, yCab, VetLetras);
         }   
         else{
-                printf("Comando inválido! Tente novamente.ELSE FINAL\n");
-            }
+                printf("Comando inválido! Tente novamente.\n");
+        }
     }
 
     fclose(arquivo);
@@ -229,9 +235,11 @@ int main(int argc, char *argv[]){
     return 0;
 }
 
+
+        /////////////////////////// Funções ///////////////////////////
+
 void marcandoTabela(int coord[2], char **matJogo,char Comando[50]){
     matJogo[coord[0]][coord[1]] = Comando[0];
-    // DEBUG printf("matJogo[%d][%d] alterado para %c\n", coord[0], coord[1], Comando[0]);
 }
 
 void printarTudo(char **matrizJogo, int lin, int col, int maiorValorX, int maiorValorY, int *quantosPorLinhaX, int *quantosPorLinhaY, int **xCab, int **yCab, char VetLetras[26]) {
@@ -344,9 +352,14 @@ int funcaoSalvar(FILE *arquivo,char nomeArquivo[50],char **matJogo, int lin, int
 }
 
 void comandoParaCoord(char Comando[50], int coord[2]){
-    coord[0] = Comando[2] - 65;
-    coord[1] = Comando[3] - 65;
-    //printf("DEBUG Coordenadas: %d %d\n", coord[0], coord[1]);
+        if( Comando[2] >= 'a' && Comando[2] <= 'z')
+            coord[0] = Comando[2] - 97;
+        if( Comando[3] >= 'a' && Comando[3] <= 'z')
+            coord[1] = Comando[3] - 97;
+            else {
+                coord[0] = Comando[2] - 65;
+                coord[1] = Comando[3] - 65;
+            }
 }
 
 int conferirJogo(char **matJogo, int lin, int col, int **yCab, int **xCab, int *qPLinY, int *qPLinX){ // verificar se o numero de marcações de linhas e colunas estão corretos.
@@ -370,7 +383,7 @@ int conferirJogo(char **matJogo, int lin, int col, int **yCab, int **xCab, int *
                     colunaOK++;
                 } else if (countY > somaColunas){
                     printf("\t\n\nErro, usuário infligiu a regra do Nonograma ao ultrapassar o número de marcações!\n\tSua jogada foi desfeita.\n");
-                    return 2;
+                    return 2; // esse return 2 faz com que a jogada seja "desfeita" retornando para um espaço '.'
                 }
                 countY = 0;
                 somaColunas = 0;
@@ -383,7 +396,7 @@ int conferirJogo(char **matJogo, int lin, int col, int **yCab, int **xCab, int *
             linhaOK++;
         } else if (countX > somaLinhas){
             printf("\t\n\nErro, usuário infligiu a regra do Nonograma ao ultrapassar o número de marcações!\n\tSua jogada foi desfeita.\n");
-            return 2;
+            return 2; // mesmo do return 2 de cima.
         }
         countX = 0;
         somaLinhas = 0;
