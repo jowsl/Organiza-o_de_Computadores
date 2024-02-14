@@ -4,7 +4,7 @@
 (define HEIGHT 150)
 (define SIZE 50)
 (define TEXT-SIZE 15)
-(struct intervalo (menor maior))
+(struct intervalo (menor maior fim?) #:transparent)
 (define TEXT-X 3)
 (define TEXT-UPPER-Y 10)
 (define TEXT-LOWER-Y 135)
@@ -30,10 +30,10 @@
 
 ;; a main
 (define (start lower upper)
-  (big-bang (intervalo lower upper)
+  (big-bang (intervalo lower upper #f)
     (on-key lidarComAdivinhar)
     (to-draw renderizado)
-    (stop-when single? )))
+    (stop-when single? renderizado)))
 
 
 (define (lidarComAdivinhar w key)
@@ -45,23 +45,27 @@
 
 (define (smaller w)
   (intervalo (intervalo-menor w)
-            (max (intervalo-menor w) (sub1 (adivinhar w)))))
+            (max (intervalo-menor w) (sub1 (adivinhar w)))
+            (intervalo-fim? w)))
 
 (define (bigger w)
   (intervalo (min (intervalo-maior w) (add1 (adivinhar w)))
-            (intervalo-maior w)))
+            (intervalo-maior w)
+            (intervalo-fim? w)))
 
 (define (adivinhar w)
   (quotient (+ (intervalo-menor w) (intervalo-maior w)) 2))
 
 (define (renderizado w)
-  (overlay (text (number->string (adivinhar w)) SIZE COLOR) FUNDO))
+  (if (intervalo-fim? w)
+      (overlay (text "FIM DE JOGO" SIZE COLOR) FUNDO) ;; if
+      (overlay (text (number->string (adivinhar w)) SIZE COLOR) FUNDO))) ;; else
 
 (define (renderizar-ultima-cena w)
   (overlay (text "FIM DE JOGO" SIZE COLOR) FUNDO))
 
 (define (stop-with w)
-  (overlay (renderizar-ultima-cena w) FUNDO))
+  (intervalo (intervalo-menor w) (intervalo-maior w) #t))
 
 (define (single? w)
   (= (intervalo-menor w) (intervalo-maior w)))
