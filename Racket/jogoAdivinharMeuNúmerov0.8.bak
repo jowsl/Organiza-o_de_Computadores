@@ -4,10 +4,12 @@
 (define HEIGHT 150)
 (define SIZE 50)
 (define TEXT-SIZE 15)
-(struct intervalo (menor maior))
+(struct intervalo (menor maior) #:transparent:)
 (define TEXT-X 3)
 (define TEXT-UPPER-Y 10)
 (define TEXT-LOWER-Y 135)
+;;(define COLOR "white")
+
 (define HELP-TEXT
   (text "↑ Para números maiores, ↓ para números menores"
         TEXT-SIZE
@@ -16,15 +18,15 @@
   (text "Pressione = quando o programa acertar o número ou q para quitar."
         TEXT-SIZE
         "blue"))
-(define color "red")
+(define COLOR "red")
 (define WIDTH (+ (image-width HELP-TEXT2) 10))
 
 (define FUNDO
-  (place-image/align ;; colocar a alinhar imagem.
+  (place-image/align ;; colocar e alinhar imagem.
    HELP-TEXT TEXT-X TEXT-UPPER-Y "left" "top"
    (place-image/align
     HELP-TEXT2 TEXT-X TEXT-LOWER-Y "left" "bottom"
-    (empty-scene WIDTH HEIGHT))))
+    (empty-scene WIDTH HEIGHT "grey"))))
 
 ;; a main
 (define (start lower upper)
@@ -32,10 +34,7 @@
     (on-key lidarComAdivinhar)
     (to-draw renderizado)
     (stop-when single? )))
-(define (renderizar-ultima-cena w)
-  (overlay (text "FIM DE JOGO"
-        SIZE
-        "orange") FUNDO))
+
 
 (define (lidarComAdivinhar w key)
   (cond [(key=? key "up") (bigger w)]
@@ -56,10 +55,13 @@
   (quotient (+ (intervalo-menor w) (intervalo-maior w)) 2))
 
 (define (renderizado w)
-  (overlay (text (number->string (adivinhar w)) SIZE "red") FUNDO))
+  (overlay (text (number->string (adivinhar w)) SIZE COLOR) FUNDO))
 
-;;(define (stop-with w)
-;;  (overlay (renderizar-ultima-cena w) FUNDO))
+(define (renderizar-ultima-cena w)
+  (overlay (text "FIM DE JOGO" SIZE COLOR) FUNDO))
+
+(define (stop-with w)
+  (overlay (renderizar-ultima-cena w) FUNDO))
 
 (define (single? w)
   (= (intervalo-menor w) (intervalo-maior w)))
