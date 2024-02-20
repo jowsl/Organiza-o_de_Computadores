@@ -13,11 +13,11 @@
 (define HELP-TEXT
   (text "↑ Para números maiores, ↓ para números menores"
         TEXT-SIZE
-        "blue"))
+        "black"))
 (define HELP-TEXT2
   (text "Pressione = quando o programa acertar o número ou q para quitar."
         TEXT-SIZE
-        "blue"))
+        "black"))
 (define COLOR "red")
 (define WIDTH (+ (image-width HELP-TEXT2) 10))
 
@@ -26,7 +26,7 @@
    HELP-TEXT TEXT-X TEXT-UPPER-Y "left" "top"
    (place-image/align
     HELP-TEXT2 TEXT-X TEXT-LOWER-Y "left" "bottom"
-    (empty-scene WIDTH HEIGHT "white"))))
+    (empty-scene WIDTH HEIGHT "cyan"))))
 
 ;; a main
 (define (start lower upper)
