@@ -1,8 +1,11 @@
 #ifndef BlocoMemoria_h
 #define BlocoMemoria_h
 #include <stdbool.h>
-#include "Endereco.h"
-#include "BlocoMemoria.h"
+
+#define TAM_C1 25
+#define TAM_C2 50
+#define TAM_C3 100
+#define TAM_RAM 1000
 
 typedef struct BlocoMemoria{
 
@@ -13,16 +16,25 @@ typedef struct BlocoMemoria{
 	int cacheHit; 
 	int cacheMiss; 
 	int timeStamp; 
-	Caches cache1[25];
-	Caches cache2[50];
-	Caches cache3[100];
+	Caches cache1[TAM_C1];
+	Caches cache2[TAM_C2];
+	Caches cache3[TAM_C3];
+	RAM ram[TAM_RAM];
 
 }BlocoMemoria;
 
 typedef struct {
-    BlocoMemoria* memoria;
-    int tamanho;
-	int endereco;
+    BlocoMemoria* blocoNaRam;
 } RAM;
+
+typedef struct{
+    int EndBloco;
+    int EndPalavra;
+}Endereco;
+
+typedef struct{
+    BlocoMemoria* blocoNaCache;
+    int pos;
+}Caches;
 
 #endif //  BlocoMemoria_h

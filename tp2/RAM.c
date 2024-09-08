@@ -2,41 +2,35 @@
 #include <time.h>
 #include <stdio.h>
 #include <stdlib.h>
-#define MAX_TAM 1000
+#define TAM_RAM 1000
 
 
-BlocoMemoria* criaRAM_vazia(int tam)
+// BlocoMemoria* criaRAM_vazia()
+// {
+//     BlocoMemoria* memoria = (BlocoMemoria*) malloc(TAM_RAM * sizeof(BlocoMemoria));
+    
+//     for (int i = 0; i < TAM_RAM; i++){
+//         memoria[i].endBloco = 1;
+        
+//         for (int j = 0; j < 4; j++){
+//             memoria[i].palavras[j] = 0;
+//         }
+//     }
+//     return memoria;
+// }
+
+void inicializarRAM(BlocoMemoria* pBloco) 
 {
-    BlocoMemoria* memoria = (BlocoMemoria*) malloc(tam * sizeof(BlocoMemoria));
-    
-    for (int i = 0; i < tam; i++){
-        memoria[i].endBloco = 1;
-        
+    for (int i = 0; i < TAM_RAM; i++) {
+        pBloco->ram[i].blocoNaRam->endBloco = i+1;  // Inicializa o endBloco, por exemplo
+        pBloco->ram[i].blocoNaRam->atualizado = false;  
+        pBloco->ram[i].blocoNaRam->custo = 0;
         for (int j = 0; j < 4; j++){
-            memoria[i].palavras[j] = 0;
+            pBloco->palavras[j] = 0;
         }
-    
     }
-    return memoria;
 }
 
-BlocoMemoria* criaRAM_aleatoria(int tam){
-    
-    srand(time(NULL));
-    BlocoMemoria* memoria = (BlocoMemoria*) malloc(tam * sizeof(BlocoMemoria));
-    
-    for (int i = 0; i < tam; i++){
-       
-        memoria[i].endBloco = 1;
-        
-        for (int j = 0; j < 4; j++){
-            
-            memoria[i].palavras[j] = rand() % 99 + 1;
-        }
-    
-    }
-    return memoria;
-}
 
 void setDado(int endereco, BlocoMemoria conteudo, BlocoMemoria* memoria) {
     memoria[endereco] = conteudo;
@@ -46,9 +40,9 @@ BlocoMemoria getDado(int endereco, BlocoMemoria* memoria) {
 		return memoria[endereco];
 }
 
-void imprimir(BlocoMemoria* memoria, int tamanho) {
+void imprimir(BlocoMemoria* memoria) {
     printf("Conteudo da RAM\n");
-    for (int i = 0; i < tamanho; i++) {
+    for (int i = 0; i < TAM_RAM; i++) {
         imprimirUmBloco(memoria[i]);
     }
     

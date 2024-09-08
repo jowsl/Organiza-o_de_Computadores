@@ -1,7 +1,6 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <stdbool.h>
-#include "Endereco.h"
 #include "BlocoMemoria.h"
 
 
@@ -11,46 +10,69 @@
 #define TAM_RAM 1000
 int timeStampContador = 0;
 
+/*
+OPCODE(0 e 1):ENDBLOCO:ENDPALAVRA(sempre de 0 1 2 3):ENDBLOCO:ENDPALAVRA:ENDBLOCO:ENDPALAVRA
+*/
 
 int timeStamp()
 { //atualizar o timeStamp
     return timeStampContador++;
 }
 
-// Função responsável por localizar um dado bloco nas memorias.
-int buscarNasMemorias(Endereco* pEnd, RAM ram, BlocoMemoria* pBloco)
+//inicializar caches
+void inicializarCaches(BlocoMemoria* bloco)
 {
+    for (int i = 0; i < TAM_C1; i++)
+    {
+        bloco->cache1[i].blocoNaCache = NULL;
+    }
 
+    for (int i = 0; i < TAM_C2; i++)
+    {
+        bloco->cache2[i].blocoNaCache = NULL;
+    }
+
+    for (int i = 0; i < TAM_C3; i++)
+    {
+        bloco->cache3[i].blocoNaCache = NULL;
+    }
+}
+
+
+
+// Função responsável por localizar um dado bloco nas memorias.
+int buscarNasMemorias(Endereco* pEnd, BlocoMemoria* pBloco, Caches* cache, int TAM)
+{
     // Pesquisa na cache1
     for (int i = 0; i < TAM_C1; i++)
     {
-
-        if (pEnd->EndBloco == pBloco->cache1[i].blocoCache->endBloco)
+        if (pEnd->EndBloco == pBloco->cache1[i].blocoNaCache->endBloco)
         {
 
-            pBloco->custo = TAM_C1; //Atribui um valor de custo de acesso dependendo de onde ele foi enontrado
             pBloco->cacheHit += 1; //Incrementa o contador de cache hit
             pBloco->timeStamp = timeStamp(); // Atualiza o timestamp
-
+            printf("Bloco encontrado na cache1.\n");
             return i;
         } else {
-            pBloco->cacheMiss += 1; //Incrementa o contador de cache miss
-            pBloco->custo = TAM_C1+TAM_C2; 
+            pBloco->cacheMiss += 1;
+            break; //Incrementa o contador de cache miss
         }
     }
     // Pesquisa na cache2
     for (int i = 0; i < TAM_C2; i++)
     {
 
-        if (pEnd->EndBloco == pBloco->cache2[i].blocoCache->endBloco)
+        if (pEnd->EndBloco == pBloco->cache2[i].blocoNaCache->endBloco)
         {
             pBloco->cacheHit += 1; 
             pBloco->cache2[i].pos = i;
-            return pBloco;
+            printf("Bloco encontrado na cache2.\n");
+            return i;
             //aqui deve ter uma chamada pra função de mover para a cache1
         } else {
             pBloco->cacheMiss += 1; 
             pBloco->custo = TAM_C1+TAM_C2+TAM_C3;
+            break;
         }
     
     }
@@ -59,30 +81,34 @@ int buscarNasMemorias(Endereco* pEnd, RAM ram, BlocoMemoria* pBloco)
     for (int i = 0; i < 100; i++)
     {
 
-        if (pEnd->EndBloco == pBloco->cache3[i].blocoCache->endBloco)
+        if (pEnd->EndBloco == pBloco->cache3[i].blocoNaCache->endBloco)
         {
             pBloco->cacheHit += 1; 
             pBloco->cache3[i].pos = i;
-            return pBloco;
+            printf("Bloco encontrado na cache3.\n");
+            return i;
             //aqui deve ter uma chamada pra função de mover para a cache2 e depois para a cache1
 
         } else {
             pBloco->cacheMiss += 1; 
-            pBloco->custo = TAM_C1+TAM_C2+TAM_C3+TAM_RAM; 
+            pBloco->custo = TAM_C1+TAM_C2+TAM_C3+TAM_RAM;
+            break; 
         }    
     }
     
         // Pesquisa na RAM
-    for (int i = 0; i < ram.tamanho; i++)
+    for (int i = 0; i < TAM_RAM; i++)
     {
 
-        if (pEnd->EndBloco == ram.memoria[i].endBloco)
+        if (pEnd->EndBloco == pBloco->ram[i].blocoNaRam->endBloco)
         {
-            ram.endereco = i;
-            return ram.endereco;
+            pBloco->ram[i].blocoNaRam->endBloco = i;
+            printf("Bloco encontrado na RAM.\n");
+            return i;
             //aqui deve ter uma chamada pra função de mover para a cache3, cache2 e depois para a cache1
         } else {
             printf("Esse Bloco ja levou o caralho.\n");
+            break;
         }    
     }
     return printf("Bloco não encontrado.\n");
@@ -91,21 +117,25 @@ int buscarNasMemorias(Endereco* pEnd, RAM ram, BlocoMemoria* pBloco)
 
 int verificarMaisVelho(int TAM_C, BlocoMemoria* bloco) {
     int minimoI = 0;
-    int minTimeStamp = bloco->cache1[0].blocoCache->timeStamp;
+    int minTimeStamp = bloco->cache1[0].blocoNaCache->timeStamp;
 
     for (int i = 1; i < TAM_C; i++) {
-        if (bloco->cache1[i].blocoCache->timeStamp < minTimeStamp) {
+        if (bloco->cache1[i].blocoNaCache->timeStamp < minTimeStamp) {
             minimoI = i;
-            minTimeStamp = bloco->cache1[i].blocoCache->timeStamp;
+            minTimeStamp = bloco->cache1[i].blocoNaCache->timeStamp;
         }
     }
     return minimoI; //deveria retornar o indice do menor timeStamp
 }
 
-
-bool cacheCheio(int Tamanho, BlocoMemoria* cache)
-{
-    return (cache->cache1->tamAtual >= Tamanho);
+//cacheCheio(25, bloco->cache1) cacheCheio(50, bloco->cache2) cacheCheio(100, bloco->cache3)
+bool cacheCheio(int tamanho, Caches cache[]) {
+    for (int i = 0; i < tamanho; i++) {
+        if (cache[i].blocoNaCache == NULL) {
+            return false;
+        }
+    }
+    return true;
 }
 
 
@@ -118,7 +148,7 @@ int movCache2Cache1(BlocoMemoria* bloco1, Endereco* )
     {
         index = verificarMaisVelho(TAM_C1, bloco1);
         aux = 
-        bloco2->cache2[index].blocoCache = bloco1->cache1[index].blocoCache;
+        bloco2->cache2[index].blocoNaCache = bloco1->cache1[index].blocoNaCache;
     }
 }
 
@@ -180,10 +210,11 @@ int main(int argc, char* argv[])
     BlocoMemoria* bloco;
     RAM ram;
 
-    endereco->EndBloco = 1;
-    int indice = buscarNasMemorias(endereco, ram, bloco);
+    inicializarCaches(bloco);
 
-    int buscou = buscarNasMemorias(endereco, ram, bloco);
+    endereco->EndBloco = 122;
+    int indice = 
+
     
 
     return 0;
