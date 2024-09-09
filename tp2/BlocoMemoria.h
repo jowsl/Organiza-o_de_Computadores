@@ -7,6 +7,11 @@
 #define TAM_C3 100
 #define TAM_RAM 1000
 
+typedef struct {
+    struct BlocoMemoria* blocoNaMemoria;  // Bloco na cache ou na RAM
+    int pos;                              // Posição para Memorias, opcional para RAM
+} Memorias;
+
 typedef struct BlocoMemoria{
 
     int palavras[4];
@@ -16,25 +21,17 @@ typedef struct BlocoMemoria{
 	int cacheHit; 
 	int cacheMiss; 
 	int timeStamp; 
-	Caches cache1[TAM_C1];
-	Caches cache2[TAM_C2];
-	Caches cache3[TAM_C3];
-	RAM ram[TAM_RAM];
+	Memorias cache1[TAM_C1];
+	Memorias cache2[TAM_C2];
+	Memorias cache3[TAM_C3];
+	Memorias ram[TAM_RAM];
 
 }BlocoMemoria;
-
-typedef struct {
-    BlocoMemoria* blocoNaRam;
-} RAM;
 
 typedef struct{
     int EndBloco;
     int EndPalavra;
 }Endereco;
 
-typedef struct{
-    BlocoMemoria* blocoNaCache;
-    int pos;
-}Caches;
 
 #endif //  BlocoMemoria_h

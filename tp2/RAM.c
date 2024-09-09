@@ -22,9 +22,9 @@
 void inicializarRAM(BlocoMemoria* pBloco) 
 {
     for (int i = 0; i < TAM_RAM; i++) {
-        pBloco->ram[i].blocoNaRam->endBloco = i+1;  // Inicializa o endBloco, por exemplo
-        pBloco->ram[i].blocoNaRam->atualizado = false;  
-        pBloco->ram[i].blocoNaRam->custo = 0;
+        pBloco->ram[i].blocoNaMemoria->endBloco = i+1;  // Inicializa o endBloco, por exemplo
+        pBloco->ram[i].blocoNaMemoria->atualizado = false;  
+        pBloco->ram[i].blocoNaMemoria->custo = 0;
         for (int j = 0; j < 4; j++){
             pBloco->palavras[j] = 0;
         }
