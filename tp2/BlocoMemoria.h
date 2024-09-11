@@ -2,36 +2,45 @@
 #define BlocoMemoria_h
 #include <stdbool.h>
 
-#define TAM_C1 25
-#define TAM_C2 50
-#define TAM_C3 100
+#define TAM_C1 32
+#define TAM_C2 64
+#define TAM_C3 128
 #define TAM_RAM 1000
+#define TAM_BLOCO 4
 
-typedef struct {
-    struct BlocoMemoria* blocoNaMemoria;  // Bloco na cache ou na RAM
-    int pos;                              // Posição para Memorias, opcional para RAM
-} Memorias;
-
-typedef struct BlocoMemoria{
-
-    int palavras[4];
-	int endBloco;
-	bool atualizado;
-	int custo;
-	int cacheHit; 
-	int cacheMiss; 
-	int timeStamp; 
-	Memorias cache1[TAM_C1];
-	Memorias cache2[TAM_C2];
-	Memorias cache3[TAM_C3];
-	Memorias ram[TAM_RAM];
-
-}BlocoMemoria;
-
-typedef struct{
-    int EndBloco;
-    int EndPalavra;
+typedef struct
+{
+    int endBloco;
+    int endPalavra;
 }Endereco;
+
+typedef struct
+{
+	int opcode;
+	Endereco endereco1;
+	Endereco endereco2;
+	Endereco endereco3;
+
+}Instrucao;
+
+
+typedef struct BlocoDePalavras{
+
+	int palavras[4];
+
+	int ultimaVezAcessado;
+	bool atualizado;
+
+	int endBloco;
+
+}BlocoDePalavras;
+
+typedef struct Memoria
+{
+	BlocoDePalavras* vetorDeBlocos;
+	int cacheHit;
+	int cacheMiss;
+}Memoria;
 
 
 #endif //  BlocoMemoria_h

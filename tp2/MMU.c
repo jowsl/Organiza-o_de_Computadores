@@ -1,267 +1,151 @@
-#include <stdio.h>
-#include <stdlib.h>
-#include <stdbool.h>
-#include "BlocoMemoria.h"
+#include "cpu.h"
 
 
-#define TAM_C1 25
-#define TAM_C2 50
-#define TAM_C3 100
-#define TAM_RAM 1000
-int timeStampContador = 0;
-
-/*
-OPCODE(0 e 1):ENDBLOCO:ENDPALAVRA(sempre de 0 1 2 3):ENDBLOCO:ENDPALAVRA:ENDBLOCO:ENDPALAVRA
-*/
-
-int timeStamp()
-{ //atualizar o timeStamp
-    return timeStampContador++;
-}
-
-//inicializar caches
-void inicializarCaches(BlocoMemoria* bloco)
+int verificarMaisVelho(int nCache, CPU *cpu)
 {
-    for (int i = 0; i < TAM_C1; i++)
-    {
-        bloco->cache1[i].blocoNaMemoria = NULL;
-    }
+    int maisVelho = 0;
 
-    for (int i = 0; i < TAM_C2; i++)
+    switch (nCache)
     {
-        bloco->cache2[i].blocoNaMemoria = NULL;
-    }
-
-    for (int i = 0; i < TAM_C3; i++)
-    {
-        bloco->cache3[i].blocoNaMemoria = NULL;
-    }
-}
-
-
-// Função responsável por localizar um dado bloco nas memorias.
-int buscarNasMemorias(Endereco* pEnd, BlocoMemoria* pBloco)
-{
-    // Pesquisa na cache1
-    for (int i = 0; i < TAM_C1; i++)
-    {
-        if (pEnd->EndBloco == pBloco->cache1[i].blocoNaMemoria->endBloco)
+    case 1:
+        for (int i = 0; i < TAM_C1; i++)
         {
-
-            pBloco->cacheHit += 1; //Incrementa o contador de cache hit
-            pBloco->timeStamp = timeStamp(); // Atualiza o timestamp
-            printf("Bloco encontrado na cache1.\n");
-            return pBloco->endBloco;
-        } else {
-            pBloco->cacheMiss += 1;
-            break; //Incrementa o contador de cache miss
-        }
-    }
-    // Pesquisa na cache2
-    for (int i = 0; i < TAM_C2; i++)
-    {
-
-        if (pEnd->EndBloco == pBloco->cache2[i].blocoNaMemoria->endBloco)
-        {
-            pBloco->cacheHit += 1; 
-            // pBloco->cache2[i].pos = i;
-            printf("Bloco encontrado na cache2.\n");
-            return pBloco->endBloco;
-            //aqui deve ter uma chamada pra função de mover para a cache1
-        } else {
-            pBloco->cacheMiss += 1; 
-            pBloco->custo = TAM_C1+TAM_C2+TAM_C3;
-            break;
-        }
-    
-    }
-
-        // Pesquisa na cache3
-    for (int i = 0; i < 100; i++)
-    {
-
-        if (pEnd->EndBloco == pBloco->cache3[i].blocoNaMemoria->endBloco)
-        {
-            pBloco->cacheHit += 1; 
-            // pBloco->cache3[i].pos = i;
-            printf("Bloco encontrado na cache3.\n");
-            return pBloco->endBloco;
-            //aqui deve ter uma chamada pra função de mover para a cache2 e depois para a cache1
-
-        } else {
-            pBloco->cacheMiss += 1; 
-            pBloco->custo = TAM_C1+TAM_C2+TAM_C3+TAM_RAM;
-            break; 
-        }    
-    }
-    
-        // Pesquisa na RAM
-    for (int i = 0; i < TAM_RAM; i++)
-    {
-
-        if (pEnd->EndBloco == pBloco->ram[i].blocoNaMemoria->endBloco)
-        {
-            pBloco->ram[i].blocoNaMemoria->endBloco = i;
-            printf("Bloco encontrado na RAM.\n");
-            return pBloco->endBloco;
-            //aqui deve ter uma chamada pra função de mover para a cache3, cache2 e depois para a cache1
-        } else {
-            printf("Esse Bloco ja levou o caralho.\n");
-            break;
-        }    
-    }
-    return printf("Bloco não encontrado.\n");
-}
-
-
-int verificarMaisVelho(int TAM_C, BlocoMemoria* bloco) {
-    int minimoI = 0;
-    int minTimeStamp = bloco->cache1[0].blocoNaMemoria->timeStamp;
-
-    switch (TAM_C)
-    {
-    case TAM_C1:
-        for (int i = 1; i < TAM_C; i++) {
-
-            if(bloco->cache1[i].blocoNaMemoria == NULL)
+            if ( cpu->cache1.vetorDeBlocos[i].ultimaVezAcessado < cpu->cache1.vetorDeBlocos[maisVelho].ultimaVezAcessado 
+             ||  cpu->cache1.vetorDeBlocos[i].endBloco == -1 )
             {
-                return i;
-            }
-
-            else if (bloco->cache1[i].blocoNaMemoria->timeStamp < minTimeStamp) {
-                minimoI = i;
-                minTimeStamp = bloco->cache1[i].blocoNaMemoria->timeStamp;
+                maisVelho = i;
             }
         }
-        return minimoI; //deveria retornar o indice do menor timeStamp
         break;
-    case TAM_C2:
-        for (int i = 1; i < TAM_C; i++) {
-
-            if(bloco->cache2[i].blocoNaMemoria == NULL)
+    case 2:
+        for (int i = 0; i < TAM_C2; i++)
+        {
+            if ( cpu->cache2.vetorDeBlocos[i].ultimaVezAcessado < cpu->cache2.vetorDeBlocos[maisVelho].ultimaVezAcessado 
+             ||  cpu->cache2.vetorDeBlocos[i].endBloco == -1 )
             {
-                return i;
-            }
-
-            else if (bloco->cache2[i].blocoNaMemoria->timeStamp < minTimeStamp){
-                minimoI = i;
-                minTimeStamp = bloco->cache2[i].blocoNaMemoria->timeStamp;
+                maisVelho = i;
             }
         }
-        return minimoI; //deveria retornar o indice do menor timeStamp
         break;
-    case TAM_C3:
-        for (int i = 1; i < TAM_C; i++) {
-
-            if(bloco->cache3[i].blocoNaMemoria == NULL)
+    case 3:
+        for (int i = 0; i < TAM_C3; i++)
+        {
+            if ( cpu->cache3.vetorDeBlocos[i].ultimaVezAcessado < cpu->cache3.vetorDeBlocos[maisVelho].ultimaVezAcessado 
+             ||  cpu->cache3.vetorDeBlocos[i].endBloco == -1 )
             {
-                return i;
-            }
-
-            else if (bloco->cache3[i].blocoNaMemoria->timeStamp < minTimeStamp) {
-                minimoI = i;
-                minTimeStamp = bloco->cache3[i].blocoNaMemoria->timeStamp;
+                maisVelho = i;
             }
         }
-        return minimoI; //deveria retornar o indice do menor timeStamp
         break;
     default:
         break;
     }
-    return 0; 
+
+    return maisVelho;
 }
 
-//função que efetua troca de um item de uma cache pelo outro usando um auxiliar
-//*
-BlocoMemoria* trocarBlocos(int indice1, int indice2, Memorias* destino , Memorias* origem)
+void trocarBloco(Memoria* origem, Memoria* destino, int pos, int maisVelho)
 {
-     Memorias aux;  
+    BlocoDePalavras aux = origem->vetorDeBlocos[pos];
 
-    aux = destino[indice1];
-    destino[indice1] = origem[indice2];
-    origem[indice2] = aux;
-
-    return destino[indice1].blocoNaMemoria;  // Retornando o ponteiro para o bloco no destino
+    origem->vetorDeBlocos[pos] = destino->vetorDeBlocos[maisVelho];
+    destino->vetorDeBlocos[maisVelho] = aux;
+    
+    return;
 }
 
+BlocoDePalavras* movCache2Cache1(CPU *cpu, int endBloco, int maisVelho)
+{
+    trocarBloco(&cpu->cache2, &cpu->cache1, endBloco, maisVelho);
 
-bool cacheCheio(int tamanho, Memorias cache[]) {
-    for (int i = 0; i < tamanho; i++) {
-        if (cache[i].blocoNaMemoria == NULL) {
-            cache->pos = i;
-            return false;
+    cpu->cache1.vetorDeBlocos[maisVelho].ultimaVezAcessado = ++cpu->tempoAtual;
+
+    return &cpu->cache1.vetorDeBlocos[maisVelho];
+}
+
+BlocoDePalavras* movCache3Cache2(CPU *cpu, int endBloco, int maisVelho)
+{
+    trocarBloco(&cpu->cache3, &cpu->cache2, endBloco, maisVelho);
+
+    return &cpu->cache2.vetorDeBlocos[maisVelho];
+}
+
+BlocoDePalavras* movRAMCache3(CPU *cpu, int endBloco, int maisVelho)
+{
+    // trocarBloco(&cpu->RAM, &cpu->cache3, endBloco, maisVelho);
+
+    if (cpu->cache3.vetorDeBlocos[maisVelho].endBloco == -1)
+    {
+        cpu->cache3.vetorDeBlocos[maisVelho] = cpu->RAM.vetorDeBlocos[endBloco];;
+    }else if (cpu->cache3.vetorDeBlocos[maisVelho].atualizado)
+    {
+        //*Atualiza a RAM
+        cpu->cache3.vetorDeBlocos[maisVelho].atualizado = false;
+        cpu->RAM.vetorDeBlocos[cpu->cache3.vetorDeBlocos[maisVelho].endBloco] = cpu->cache3.vetorDeBlocos[maisVelho];
+        cpu->cache3.vetorDeBlocos[maisVelho] = cpu->RAM.vetorDeBlocos[endBloco];
+    }else
+    {
+        cpu->cache3.vetorDeBlocos[maisVelho] = cpu->RAM.vetorDeBlocos[endBloco];
+    }
+
+
+    return &cpu->cache3.vetorDeBlocos[maisVelho];
+}
+
+BlocoDePalavras* buscarNasMemorias(CPU *cpu, Endereco end)
+{
+    for (int i = 0; i < TAM_C1; i++)
+    {
+        if (cpu->cache1.vetorDeBlocos[i].endBloco == end.endBloco)
+        {
+            cpu->cache1.cacheHit++;
+            cpu->custo += TAM_C1;
+            
+            return &cpu->cache1.vetorDeBlocos[i];
         }
     }
-    return true;
-}
+    cpu->cache1.cacheMiss++;
+    cpu->custo += TAM_C1;
 
-
-bool movCache2Cache1(BlocoMemoria* bloco1, BlocoMemoria* bloco2)
-{
-    int index1, index2;
-    
-    if(cacheCheio(TAM_C1, bloco1->cache1))
+    for (int i = 0; i < TAM_C2; i++)
     {
-        index1 = verificarMaisVelho(TAM_C1, bloco1);
-        index2 = verificarMaisVelho(TAM_C2, bloco2);
-        bloco1 = trocarBlocos(index1, index2, bloco1->cache2, bloco2->cache1);
-        bloco1->timeStamp = timeStamp(); //atualiza o timeStamp do novo bloco da cache1
-        bloco1->atualizado = true; //atualizado? true
-
-    } else {
-        bloco1->cache1[bloco1->cache1->pos].blocoNaMemoria = bloco2->cache2->blocoNaMemoria; //insere o bloco da cache2 na cache1 onde tinha um NULL
-        bloco1->timeStamp = timeStamp(); //atualiza o timeStamp do novo bloco da cache1
-        bloco1->atualizado = true;
-
+        if (cpu->cache2.vetorDeBlocos[i].endBloco == end.endBloco)
+        {
+            cpu->cache2.cacheHit++;
+            cpu->custo += TAM_C2;
+            int maisVelho = verificarMaisVelho(1, cpu);
+            return movCache2Cache1(cpu, i, maisVelho);
+        }
     }
-    return true;
-}
+    cpu->cache2.cacheMiss++;
+    cpu->custo += TAM_C2;
 
-bool movCache3Cache2(BlocoMemoria* bloco1, BlocoMemoria* bloco2)
-{
-    int index1, index2;
-    
-    if(cacheCheio(TAM_C2, bloco1->cache2))
+    for (int i = 0; i < TAM_C3; i++)
     {
-        index1 = verificarMaisVelho(TAM_C2, bloco1);
-        index2 = verificarMaisVelho(TAM_C3, bloco2);
-        bloco1 = trocarBlocos(index1, index2, bloco1, bloco2);
-        bloco1->timeStamp = timeStamp(); 
-    } else {
-        bloco1->cache2[bloco1->cache2->pos].blocoNaMemoria = bloco2->cache3->blocoNaMemoria; 
-        bloco1->timeStamp = timeStamp(); 
+        if (cpu->cache3.vetorDeBlocos[i].endBloco == end.endBloco)
+        {
+            cpu->cache3.cacheHit++;
+            cpu->custo += TAM_C3;
+
+            int maisVelho = verificarMaisVelho(2, cpu);
+
+            movCache3Cache2(cpu, i, maisVelho);
+
+            maisVelho = verificarMaisVelho(1, cpu);
+
+            return movCache2Cache1(cpu, i, maisVelho);
+        }
     }
-}
+    cpu->cache3.cacheMiss++;
+    cpu->custo += TAM_C3;
+    cpu->custo += TAM_RAM;
 
-//*detalhe, Ram n faz a troca, sempre tem que ter uma copia do bloco la.
-void movRamCache3(BlocoMemoria* bloco1, Memorias* ram)
-{
-    int index1, index2=0;
+    int maisVelho = verificarMaisVelho(3, cpu);
+    movRAMCache3(cpu, end.endBloco, maisVelho);
 
-    if(cacheCheio(TAM_C3, bloco1->cache3))
-    {
-        index1 = verificarMaisVelho(TAM_C3, bloco1);
-        bloco1->cache3[index1].blocoNaMemoria = ram[index2].blocoNaMemoria; //??
-        //index2 = verificarMaisVelho(TAM_RAM, bloco2); ????
-        bloco1->timeStamp = timeStamp(); 
-    } else { 
-        bloco1->cache3[bloco1->cache3->pos].blocoNaMemoria = ram->blocoNaMemoria; 
-        bloco1->timeStamp = timeStamp(); 
-    }
-}
+    maisVelho = verificarMaisVelho(2, cpu);
+    movCache3Cache2(cpu, end.endBloco, maisVelho);
 
-
-int main(int argc, char* argv[])
-{
-    Endereco* endereco;
-    BlocoMemoria* bloco;
-    Memorias ram;
-
-    // inicializarMemorias(bloco);
-    verificarMaisVelho(TAM_C1, bloco);
-
-
-    
-
-    return 0;
+    maisVelho = verificarMaisVelho(1, cpu);
+    return movCache2Cache1(cpu, end.endBloco, maisVelho);
 }

@@ -1,7 +1,6 @@
 #ifndef Instrucao_h
 #define Instrucao_h
-#include "Endereco.h"
-
+#include "BlocoMemoria.h"
 
 typedef struct{
 

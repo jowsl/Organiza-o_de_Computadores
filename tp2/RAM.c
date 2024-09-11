@@ -32,6 +32,7 @@ void inicializarRAM(BlocoMemoria* pBloco)
 }
 
 
+
 void setDado(int endereco, BlocoMemoria conteudo, BlocoMemoria* memoria) {
     memoria[endereco] = conteudo;
 }

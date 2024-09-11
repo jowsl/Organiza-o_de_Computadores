@@ -64,7 +64,7 @@ void instGenerator() {
     }
     for (int i = 0; i < N_INST; i++) {
         for (int k = 0; k < 6; k++) {
-            fprintf(arquivo, "%d:", inst[i][k]);
+            fprintf(arquivo, "%d ", inst[i][k]);
         }
         fprintf(arquivo, "%d\n", inst[i][6]);
     }
