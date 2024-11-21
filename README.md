@@ -17,4 +17,4 @@ Este programa foi desenvolvido durante a disciplina de Organização de Computad
 
 ## Como Executar
 
-Utilize o make pra executar o makefile e criar um exe.
+Utilize o make para executar o makefile e criar o arquivo "exe" que será o executável do programa.
